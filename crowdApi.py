@@ -142,16 +142,16 @@ def gen1():
        while capture.isOpened():
         grabbed,frame = capture.read()
         if grabbed:
-           scale_percent = 25  # percent of original size
+           scale_percent = 60  # percent of original size
            width = int(frame.shape[1] * scale_percent / 100)
            height = int(frame.shape[0] * scale_percent / 100)
            dim = (width, height)
            # resize image
            frame = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
            if torch.cuda.is_available():
-            img = transform(Image.fromarray(frame).convert('RGB')).cuda()
+             img = transform(Image.fromarray(frame).convert('RGB')).cuda()
            else:
-            img = transform(Image.fromarray(frame).convert('RGB'))
+               img = transform(Image.fromarray(frame).convert('RGB'))
            output = model(img.unsqueeze(0))
            imess = str(datetime.datetime.now())
            x = int(output.detach().cpu().sum().numpy())+10
@@ -178,7 +178,7 @@ def gen2():
        while capture.isOpened():
         grabbed,frame = capture.read()
         if grabbed:
-           scale_percent = 25  # percent of original size
+           scale_percent = 50  # percent of original size
            width = int(frame.shape[1] * scale_percent / 100)
            height = int(frame.shape[0] * scale_percent / 100)
            dim = (width, height)
