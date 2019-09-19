@@ -142,7 +142,7 @@ def gen1():
        while capture.isOpened():
         grabbed,frame = capture.read()
         if grabbed:
-           scale_percent = 60  # percent of original size
+           scale_percent = 50  # percent of original size
            width = int(frame.shape[1] * scale_percent / 100)
            height = int(frame.shape[0] * scale_percent / 100)
            dim = (width, height)
