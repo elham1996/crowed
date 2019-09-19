@@ -156,11 +156,11 @@ def gen1():
            imess = str(datetime.datetime.now())
            x = int(output.detach().cpu().sum().numpy())+10
            timess = datetime.datetime.now()
-           ''''with app.app_context():
+           with app.app_context():
                 c = get_db().cursor()
                 c.execute("INSERT INTO " + table_name + " VALUES (?,?)", (x, timess))
                 get_db().commit()
-            '''
+
            ret, jpeg = cv2.imencode('.jpg', frame)
            if jpeg is not None:
                yield (b'--frame\r\n'
