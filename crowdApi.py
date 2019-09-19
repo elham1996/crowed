@@ -167,7 +167,7 @@ def gen1():
                       b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n')
            else:
                print("frame is none")
-           time.sleep(2)
+           time.sleep(1)
         else:
             break
 
@@ -203,7 +203,7 @@ def gen2():
                       b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n')
            else:
                print("frame is none")
-           time.sleep(2)
+           time.sleep(1)
         else:
             break
 
