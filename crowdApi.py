@@ -184,9 +184,9 @@ def gen1():
                                   rect[0]:(rect[0] + rect[2])]  # crop roi for faster calcluation
 
                    if torch.cuda.is_available():
-                     img = transform(Image.fromarray(frame).convert('RGB')).cuda()
+                     img = transform(Image.fromarray(croped_frame).convert('RGB')).cuda()
                    else:
-                       img = transform(Image.fromarray(frame).convert('RGB'))
+                       img = transform(Image.fromarray(croped_frame).convert('RGB'))
                    output = model(img.unsqueeze(0))
                    x = int(output.detach().cpu().sum().numpy())+10
                    timess = datetime.datetime.now()
