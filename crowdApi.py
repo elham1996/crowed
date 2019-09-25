@@ -104,7 +104,7 @@ def getattend():
 def getlastattend():
     camid = request.args.get("camid")
     locid = request.args.get("locid")
-    if camid >=0  and locid>=0 :
+    if camid is not None  and locid is not None:
         with app.app_context():
             c = get_db().cursor()
             c.execute("SELECT peoplecnt FROM " + table_name + " where camno = "+camid+" and locid = "+locid+" order by logtime desc limit 1 ")
