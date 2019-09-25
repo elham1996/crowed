@@ -40,7 +40,7 @@ with open(fn_yaml, 'r') as stream:
 
 contours=[]
 bounding_rects=[]
-sec_to_wait = 5
+sec_to_wait = 7
 allpoints=[]
 if observ_points != None:
     for square in observ_points:
@@ -188,7 +188,7 @@ def gen1():
                    else:
                        img = transform(Image.fromarray(croped_frame).convert('RGB'))
                    output = model(img.unsqueeze(0))
-                   x = int(output.detach().cpu().sum().numpy())+10
+                   x = int(output.detach().cpu().sum().numpy())+5
                    timess = datetime.datetime.now()
                    with app.app_context():
                         c = get_db().cursor()
