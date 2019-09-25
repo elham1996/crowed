@@ -15,6 +15,7 @@ import logging
 import sqlite3
 from sqlite3 import Error
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 from VideoGet import VideoGet
 import tensorflow as tf
 from torchvision import datasets, transforms
@@ -103,12 +104,13 @@ def getattend():
 def getlastattend():
     camid = request.args.get("camid")
     locid = request.args.get("locid")
-
-    with app.app_context():
-        c = get_db().cursor()
-        c.execute("SELECT peoplecnt FROM " + table_name + " where camno = "+camid+" and locid = "+locid+" order by logtime desc limit 1 ")
-        row = c.fetchone()
-        return jsonify(row)
+    if camid >=0  and locid>=0 :
+        with app.app_context():
+            c = get_db().cursor()
+            c.execute("SELECT peoplecnt FROM " + table_name + " where camno = "+camid+" and locid = "+locid+" order by logtime desc limit 1 ")
+            row = c.fetchone()
+            return jsonify(row)
+    return 0
 
 
 def get_db():
