@@ -19,6 +19,8 @@ from VideoGet import VideoGet
 import tensorflow as tf
 from torchvision import datasets, transforms
 import time
+import yaml
+
 transform=transforms.Compose([transforms.ToTensor(),transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225]),])
 
 model = CSRNet()
@@ -29,6 +31,29 @@ graph = tf.get_default_graph()
 
 DATABASE = 'peopleCount.db'
 table_name = 'peopleCount'
+
+fn_yaml = "cam1.yml"
+last_pos=0
+with open(fn_yaml, 'r') as stream:
+    observ_points = yaml.load(stream)
+
+contours=[]
+bounding_rects=[]
+sec_to_wait = 3
+allpoints=[]
+if observ_points != None:
+    for square in observ_points:
+        points = np.array(square['points'])
+        rect = cv2.boundingRect(points)
+        points_shifted = points.copy()
+        #points_shifted[:,0] = points[:,0] - rect[0] # shift contour to region of interest
+        #points_shifted[:,1] = points[:,1] - rect[1]
+        contours.append(points)
+        bounding_rects.append(rect)
+        allpoints.append(points)
+
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -76,9 +101,12 @@ def getattend():
 
 @app.route('/getlastattend')
 def getlastattend():
+    camid = request.args.get("camid")
+    locid = request.args.get("locid")
+
     with app.app_context():
         c = get_db().cursor()
-        c.execute("SELECT peoplecnt FROM " + table_name + " order by logtime desc limit 1 ")
+        c.execute("SELECT peoplecnt FROM " + table_name + " where camno = "+camid+" and locid = "+locid+" order by logtime desc limit 1 ")
         row = c.fetchone()
         return jsonify(row)
 
@@ -137,37 +165,42 @@ def postimage():
 
 def gen1():
    global graph
+   global last_pos
    with graph.as_default():
        capture = cv2.VideoCapture("My Video.mp4")
        while capture.isOpened():
         grabbed,frame = capture.read()
         if grabbed:
-           scale_percent = 45  # percent of original size
-           width = int(frame.shape[1] * scale_percent / 100)
-           height = int(frame.shape[0] * scale_percent / 100)
-           dim = (width, height)
-           # resize image
-           frame = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
-           if torch.cuda.is_available():
-             img = transform(Image.fromarray(frame).convert('RGB')).cuda()
-           else:
-               img = transform(Image.fromarray(frame).convert('RGB'))
-           output = model(img.unsqueeze(0))
-           imess = str(datetime.datetime.now())
-           x = int(output.detach().cpu().sum().numpy())+10
-           timess = datetime.datetime.now()
-           with app.app_context():
-                c = get_db().cursor()
-                c.execute("INSERT INTO " + table_name + " VALUES (?,?)", (x, timess))
-                get_db().commit()
+            frame = cv2.resize(frame, None, fx=0.5, fy=0.5)
+            video_cur_pos = capture.get(cv2.CAP_PROP_POS_MSEC) / 1000.0
+            if video_cur_pos - last_pos > sec_to_wait or last_pos==0:
+                last_pos = video_cur_pos
+                for ind, seq in enumerate(observ_points):
+                   points = np.array(seq['points'])
+                   rect = bounding_rects[ind]
+                   croped_frame = frame[rect[1]:(rect[1] + rect[3]),
+                                  rect[0]:(rect[0] + rect[2])]  # crop roi for faster calcluation
 
-           ret, jpeg = cv2.imencode('.jpg', frame)
-           if jpeg is not None:
+                   if torch.cuda.is_available():
+                     img = transform(Image.fromarray(frame).convert('RGB')).cuda()
+                   else:
+                       img = transform(Image.fromarray(frame).convert('RGB'))
+                   output = model(img.unsqueeze(0))
+                   x = int(output.detach().cpu().sum().numpy())+10
+                   timess = datetime.datetime.now()
+                   with app.app_context():
+                        c = get_db().cursor()
+                        c.execute("INSERT INTO " + table_name + " VALUES (?,?,?,?)", (x, timess,1,ind))
+                        get_db().commit()
+            cv2.drawContours(frame, allpoints, contourIdx=-1,
+                            color=(0, 255, 0), thickness=2, lineType=cv2.LINE_8)
+            ret, jpeg = cv2.imencode('.jpg', frame)
+            if jpeg is not None:
                yield (b'--frame\r\n'
                       b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n')
-           else:
+            else:
                print("frame is none")
-           time.sleep(1)
+            #time.sleep(1)
         else:
             break
 
@@ -192,11 +225,11 @@ def gen2():
            imess = str(datetime.datetime.now())
            x = int(output.detach().cpu().sum().numpy())+10
            timess = datetime.datetime.now()
-           '''with app.app_context():
+           with app.app_context():
                 c = get_db().cursor()
-                c.execute("INSERT INTO " + table_name + " VALUES (?,?)", (x, timess))
+                c.execute("INSERT INTO " + table_name + " VALUES (?,?,?)", (x, timess,2))
                 get_db().commit()
-           '''
+
            ret, jpeg = cv2.imencode('.jpg', frame)
            if jpeg is not None:
                yield (b'--frame\r\n'
@@ -231,7 +264,7 @@ if __name__ == "__main__":
         #video_getter = VideoGet(source).start()
         log.setLevel(logging.ERROR)
         c = get_db().cursor()
-        sql = 'create table if not exists ' + table_name + ' (peoplecnt integer , logtime text)'
+        sql = 'create table if not exists ' + table_name + ' (peoplecnt integer , logtime text , camno integer , locid integer)'
         c.execute(sql)
         get_db().commit()
         c.close()
