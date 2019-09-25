@@ -40,7 +40,7 @@ with open(fn_yaml, 'r') as stream:
 
 contours=[]
 bounding_rects=[]
-sec_to_wait = 3
+sec_to_wait = 5
 allpoints=[]
 if observ_points != None:
     for square in observ_points:

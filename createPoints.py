@@ -8,8 +8,8 @@ import numpy as np
 refPt = []
 cropping = False
 data = []
-file_path = 'cam2.yml'
-img = cv2.imread('My Video2.JPG')
+file_path = 'cam1.yml'
+img = cv2.imread('My Video1.JPG')
 
 
 def yaml_loader(file_path):
