@@ -155,7 +155,7 @@ def postimage():
     img = transform(Image.open(temp_storage).convert('RGB')).cuda()
     output = model(img.unsqueeze(0))
     timess = str(datetime.datetime.now())
-    x=int(output.detach().cpu().sum().numpy()+10)
+    x=int(output.detach().cpu().sum().numpy())
     print("Predicted Count : ", int(output.detach().cpu().sum().numpy()+10))
     print('time: ',timess)
     with app.app_context():
@@ -172,7 +172,7 @@ def gen1():
        while capture.isOpened():
         grabbed,frame = capture.read()
         if grabbed:
-            frame = cv2.resize(frame, None, fx=0.5, fy=0.5)
+            frame = cv2.resize(frame, None, fx=0.7, fy=0.7)
             video_cur_pos = capture.get(cv2.CAP_PROP_POS_MSEC) / 1000.0
             if video_cur_pos - last_pos > sec_to_wait or last_pos==0:
                 last_pos = video_cur_pos

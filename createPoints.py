@@ -64,7 +64,7 @@ def click_and_crop(event, x, y, flags, param):
         refPt = []
 
 
-image = cv2.resize(img, None, fx=0.5, fy=0.5)
+image = cv2.resize(img, None, fx=0.7, fy=0.7)
 clone = image.copy()
 cv2.namedWindow("Double click to mark points")
 cv2.imshow("Double click to mark points", image)
