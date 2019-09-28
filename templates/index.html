@@ -181,9 +181,11 @@
 			<script src="../js/util.js"></script>
 			<script src="../js/main.js"></script>
 <script>
-		 setInterval(function(){ loadData1(); }, 5000);
+		 setTimeout(function(){ loadData1(); }, 5000);
 
-		  setInterval(function(){ loadData2(); }, 5000);
+
+
+		  setTimeout(function(){ loadData2(); }, 5000);
 
 					function loadData1()
 					{
@@ -195,6 +197,8 @@
 								var arrData = new Array();
 								var jsonObj = eval(xhr.responseText);
 								  document.getElementById("lastseen").innerHTML =jsonObj[0];
+								  		 setTimeout(function(){ loadData1(); }, 5000);
+
 							}
 						};
 						xhr.open('GET', 'getlastattend?camid=1&locid=0');
@@ -212,6 +216,8 @@
 								var arrData = new Array();
 								var jsonObj = eval(xhr.responseText);
 								  document.getElementById("lastseen2").innerHTML =jsonObj[0];
+								  		 setTimeout(function(){ loadData2(); }, 5000);
+
 							}
 						};
 						xhr.open('GET', 'getlastattend?camid=1&locid=1');
