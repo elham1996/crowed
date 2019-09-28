@@ -256,6 +256,7 @@ def video_feed1():
 def video_feed2():
     return Response(gen2(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+from waitress import serve
 
 
 if __name__ == "__main__":
@@ -277,6 +278,7 @@ if __name__ == "__main__":
         log = logging.getLogger('werkzeug')
         log.setLevel(logging.ERROR)
         print("Starting server on http://localhost:2000")
-        print("Serving ...",  app.run(host='0.0.0.0', port=2000))
+        #print("Serving ...",  app.run(host='0.0.0.0', port=2000))
+        serve(app, host='0.0.0.0', port=2000)
         print("Finished !")
         print("Done !")
