@@ -39,7 +39,7 @@ with open(fn_yaml, 'r') as stream:
 
 contours=[]
 bounding_rects=[]
-sec_to_wait = 3
+sec_to_wait = 5
 allpoints=[]
 if observ_points != None:
     for square in observ_points:
@@ -199,7 +199,7 @@ def gen1():
 
             cv2.drawContours(frame, allpoints, contourIdx=-1,
                             color=(0, 255, 0), thickness=2, lineType=cv2.LINE_8)
-            frame = cv2.resize(frame, None, fx=0.5, fy=0.5)
+            frame = cv2.resize(frame, None, fx=0.4, fy=0.4)
             ret, jpeg = cv2.imencode('.jpg', frame)
             if jpeg is not None:
                yield (b'--frame\r\n'
