@@ -182,14 +182,14 @@ def gen1():
                    croped_frame = frame[rect[1]:(rect[1] + rect[3]),
                                   rect[0]:(rect[0] + rect[2])]  # crop roi for faster calcluation
                    croped_frame = cv2.cvtColor(croped_frame, cv2.COLOR_BGR2RGB)
-                   imgname = 'croped{}.jpg'.format(video_cur_pos)
-                   cv2.imwrite(imgname, croped_frame)
+                   #imgname = 'croped{}.jpg'.format(video_cur_pos)
+                   #cv2.imwrite(imgname, croped_frame)
                    if torch.cuda.is_available():
-                      #img = transform(Image.fromarray(croped_frame).convert('RGB')).cuda()
-                      img = transform(Image.open(imgname).convert('RGB')).cuda()
+                      img = transform(Image.fromarray(croped_frame).convert('RGB')).cuda()
+                      #img = transform(Image.open(imgname).convert('RGB')).cuda()
                    else:
-                       #img = transform(Image.fromarray(croped_frame).convert('RGB'))
-                       img = transform(Image.open(imgname).convert('RGB'))
+                       img = transform(Image.fromarray(croped_frame).convert('RGB'))
+                       #img = transform(Image.open(imgname).convert('RGB'))
                    output = model(img.unsqueeze(0))
                    x = int(output.detach().cpu().sum().numpy())
                    timess = datetime.datetime.now()
