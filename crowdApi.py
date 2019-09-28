@@ -39,7 +39,7 @@ with open(fn_yaml, 'r') as stream:
 
 contours=[]
 bounding_rects=[]
-sec_to_wait = 7
+sec_to_wait = 3
 allpoints=[]
 if observ_points != None:
     for square in observ_points:
@@ -105,7 +105,19 @@ def getlastattend():
     locid = request.args.get("locid")
     if camid is not None  and locid is not None:
         with app.app_context():
+            imgname = 'croped1_'+locid+'.jpg'
+            if torch.cuda.is_available():
+                # img = transform(Image.fromarray(croped_frame).convert('RGB')).cuda()
+                img = transform(Image.open(imgname).convert('RGB')).cuda()
+            else:
+                # img = transform(Image.fromarray(croped_frame).convert('RGB'))
+                img = transform(Image.open(imgname).convert('RGB'))
+            output = model(img.unsqueeze(0))
+            x = int(output.detach().cpu().sum().numpy())
+            timess = datetime.datetime.now()
             c = get_db().cursor()
+            c.execute("INSERT INTO " + table_name + " VALUES (?,?,?,?)", (x, timess, 1, locid))
+            get_db().commit()
             c.execute("SELECT peoplecnt FROM " + table_name + " where camno = "+camid+" and locid = "+locid+" order by logtime desc limit 1 ")
             row = c.fetchone()
             return jsonify(row)
@@ -182,21 +194,9 @@ def gen1():
                    croped_frame = frame[rect[1]:(rect[1] + rect[3]),
                                   rect[0]:(rect[0] + rect[2])]  # crop roi for faster calcluation
                    croped_frame = cv2.cvtColor(croped_frame, cv2.COLOR_BGR2RGB)
-                   #imgname = 'croped{}.jpg'.format(video_cur_pos)
-                   #cv2.imwrite(imgname, croped_frame)
-                   if torch.cuda.is_available():
-                      img = transform(Image.fromarray(croped_frame).convert('RGB')).cuda()
-                      #img = transform(Image.open(imgname).convert('RGB')).cuda()
-                   else:
-                       img = transform(Image.fromarray(croped_frame).convert('RGB'))
-                       #img = transform(Image.open(imgname).convert('RGB'))
-                   output = model(img.unsqueeze(0))
-                   x = int(output.detach().cpu().sum().numpy())
-                   timess = datetime.datetime.now()
-                   with app.app_context():
-                        c = get_db().cursor()
-                        c.execute("INSERT INTO " + table_name + " VALUES (?,?,?,?)", (x, timess,1,ind))
-                        get_db().commit()
+                   imgname = 'croped{}_{}.jpg'.format(1).format(ind)
+                   cv2.imwrite(imgname, croped_frame)
+
             cv2.drawContours(frame, allpoints, contourIdx=-1,
                             color=(0, 255, 0), thickness=2, lineType=cv2.LINE_8)
             ret, jpeg = cv2.imencode('.jpg', frame)
