@@ -194,7 +194,7 @@ def gen1():
                    croped_frame = frame[rect[1]:(rect[1] + rect[3]),
                                   rect[0]:(rect[0] + rect[2])]  # crop roi for faster calcluation
                    croped_frame = cv2.cvtColor(croped_frame, cv2.COLOR_BGR2RGB)
-                   imgname = 'croped{}_{}.jpg'.format(1).format(ind)
+                   imgname = 'croped{}_{}.jpg'.format(1,ind)
                    cv2.imwrite(imgname, croped_frame)
 
             cv2.drawContours(frame, allpoints, contourIdx=-1,
