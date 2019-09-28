@@ -98,7 +98,6 @@ def getattend():
         rows = c.fetchall()
         return jsonify(rows)
 
-
 @app.route('/getlastattend')
 def getlastattend():
     camid = request.args.get("camid")
