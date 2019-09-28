@@ -106,21 +106,22 @@ def getlastattend():
     if camid is not None  and locid is not None:
         with app.app_context():
             imgname = 'croped1_'+locid+'.jpg'
-            if torch.cuda.is_available():
-                # img = transform(Image.fromarray(croped_frame).convert('RGB')).cuda()
-                img = transform(Image.open(imgname).convert('RGB')).cuda()
-            else:
-                # img = transform(Image.fromarray(croped_frame).convert('RGB'))
-                img = transform(Image.open(imgname).convert('RGB'))
-            output = model(img.unsqueeze(0))
-            x = int(output.detach().cpu().sum().numpy())
-            timess = datetime.datetime.now()
-            c = get_db().cursor()
-            c.execute("INSERT INTO " + table_name + " VALUES (?,?,?,?)", (x, timess, 1, locid))
-            get_db().commit()
-            c.execute("SELECT peoplecnt FROM " + table_name + " where camno = "+camid+" and locid = "+locid+" order by logtime desc limit 1 ")
-            row = c.fetchone()
-            return jsonify(row)
+            if path.exists(imgname):
+                if torch.cuda.is_available():
+                    # img = transform(Image.fromarray(croped_frame).convert('RGB')).cuda()
+                    img = transform(Image.open(imgname).convert('RGB')).cuda()
+                else:
+                    # img = transform(Image.fromarray(croped_frame).convert('RGB'))
+                    img = transform(Image.open(imgname).convert('RGB'))
+                output = model(img.unsqueeze(0))
+                x = int(output.detach().cpu().sum().numpy())
+                timess = datetime.datetime.now()
+                c = get_db().cursor()
+                c.execute("INSERT INTO " + table_name + " VALUES (?,?,?,?)", (x, timess, 1, locid))
+                get_db().commit()
+                c.execute("SELECT peoplecnt FROM " + table_name + " where camno = "+camid+" and locid = "+locid+" order by logtime desc limit 1 ")
+                row = c.fetchone()
+                return jsonify(row)
     return 0
 
 
