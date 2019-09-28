@@ -199,6 +199,7 @@ def gen1():
 
             cv2.drawContours(frame, allpoints, contourIdx=-1,
                             color=(0, 255, 0), thickness=2, lineType=cv2.LINE_8)
+            frame = cv2.resize(frame, None, fx=0.5, fy=0.5)
             ret, jpeg = cv2.imencode('.jpg', frame)
             if jpeg is not None:
                yield (b'--frame\r\n'
