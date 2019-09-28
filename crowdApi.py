@@ -39,7 +39,7 @@ with open(fn_yaml, 'r') as stream:
 
 contours=[]
 bounding_rects=[]
-sec_to_wait = 4
+sec_to_wait = 5
 allpoints=[]
 if observ_points != None:
     for square in observ_points:
@@ -186,7 +186,7 @@ def gen1():
         if grabbed:
             frame = cv2.resize(frame, None, fx=0.7, fy=0.7)
             video_cur_pos = capture.get(cv2.CAP_PROP_POS_MSEC) / 1000.0
-            if video_cur_pos - last_pos > sec_to_wait or last_pos==0:
+            if video_cur_pos - last_pos > sec_to_wait : #or last_pos==0
                 last_pos = video_cur_pos
                 for ind, seq in enumerate(observ_points):
                    points = np.array(seq['points'])
