@@ -121,7 +121,7 @@ def getlastattend():
                 c.execute("SELECT peoplecnt FROM " + table_name + " where camno = "+camid+" and locid = "+locid+" order by logtime desc limit 1 ")
                 row = c.fetchone()
                 return jsonify(row)
-    return 0
+    return jsonify("")
 
 
 def get_db():
