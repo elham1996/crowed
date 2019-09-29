@@ -9,7 +9,7 @@ refPt = []
 cropping = False
 data = []
 file_path = 'cam1.yml'
-img = cv2.imread('My Video1.JPG')
+img = cv2.imread('ice_screenshot_20190929-102200.png')
 
 
 def yaml_loader(file_path):

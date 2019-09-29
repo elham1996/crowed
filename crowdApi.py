@@ -180,20 +180,20 @@ def gen1():
    global graph
    global last_pos
    with graph.as_default():
-       capture = cv2.VideoCapture("My Video.mp4")
+       capture = cv2.VideoCapture("TR-2 D_L Pillar bet. Check-In Counter 224-225-2019-06-11_10h00min00s000ms.mp4")
        while capture.isOpened():
         grabbed,frame = capture.read()
         if grabbed:
             frame = cv2.resize(frame, None, fx=0.7, fy=0.7)
             video_cur_pos = capture.get(cv2.CAP_PROP_POS_MSEC) / 1000.0
-            if video_cur_pos - last_pos > sec_to_wait : #or last_pos==0
+            if video_cur_pos - last_pos > sec_to_wait or last_pos==0:
                 last_pos = video_cur_pos
                 for ind, seq in enumerate(observ_points):
                    points = np.array(seq['points'])
                    rect = bounding_rects[ind]
                    croped_frame = frame[rect[1]:(rect[1] + rect[3]),
                                   rect[0]:(rect[0] + rect[2])]  # crop roi for faster calcluation
-                   croped_frame = cv2.cvtColor(croped_frame, cv2.COLOR_BGR2RGB)
+                   #croped_frame = cv2.cvtColor(croped_frame, cv2.COLOR_BGR2RGB)
                    imgname = 'croped{}_{}.jpg'.format(1,ind)
                    cv2.imwrite(imgname, croped_frame)
 
